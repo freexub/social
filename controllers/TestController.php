@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Category;
+use app\models\Colors;
 use app\models\Questions;
 use app\models\QuestionsTalent;
 use app\models\Talents;
@@ -135,11 +136,31 @@ class TestController extends Controller
 
         $model = $this->findModel($id);
         $category = Category::find()->all();
+        $colors = Colors::find()->all();
 
         return $this->render('view',[
             'model'=> $model,
-            'category'=> $category
+            'category'=> $category,
+            'bars'=> $this->bars($model),
+            'colors'=> $colors
         ]);
+    }
+
+    function bars($model){
+        $colors = Colors::find()->all();
+        $result = json_decode($model->result,true);
+        $resultSum = array_sum($result);
+        $arrColors = [];
+        $array = [];
+
+        foreach ($colors as $color){
+            $talentsId = Talents::find()->select(['id'])->where(['color_id'=>$color->id])->all();
+            foreach ($talentsId as $talent){
+                $arrColors[$color->coloring][] = $result[$talent->id];
+            }
+            $array[$color->coloring] = round(array_sum($arrColors[$color->coloring])/$resultSum*100,1);
+        }
+        return $array;
     }
 
     protected function findModel($id)

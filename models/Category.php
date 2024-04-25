@@ -46,7 +46,7 @@ class Category extends \yii\db\ActiveRecord
         return $this->hasMany(CategoryTalents::className(), ['id' => 'category_id']);
     }
 
-    public function getCategoryStatus($talent_id){
+    public function getTalentStatus($talent_id){
         $model = CategoryTalents::find()->where(['category_id'=>$this->id, 'talents_id'=>$talent_id])->one();
         $array = [];
         if (isset($model)){

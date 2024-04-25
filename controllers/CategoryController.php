@@ -4,6 +4,8 @@ namespace app\controllers;
 
 use app\models\Category;
 use app\models\CategorySearch;
+use app\models\CategoryTalents;
+use app\models\Talents;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -55,9 +57,30 @@ class CategoryController extends Controller
      */
     public function actionView($id)
     {
+        $talents = Talents::find()->all();
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'talents' => $talents,
         ]);
+    }
+
+    public function actionNewLink(){
+        if ($this->request->isPost) {
+            $modelLink = new CategoryTalents();
+            if ($modelLink->load($this->request->post())) {
+                if ($modelLink->save()){
+                    return $this->redirect(\Yii::$app->request->referrer);
+                }
+            }
+        }
+    }
+
+    public function actionDeleteLink(){
+        if ($this->request->isPost) {
+            $modelLink = CategoryTalents::find()->where(['talents_id'=>$_POST["CategoryTalents"]['talents_id'], 'category_id'=>$_POST["CategoryTalents"]['category_id']])->one();
+            $modelLink->delete();
+            return $this->redirect(\Yii::$app->request->referrer);
+        }
     }
 
     /**

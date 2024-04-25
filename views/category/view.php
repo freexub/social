@@ -5,6 +5,7 @@ use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
 /** @var app\models\Category $model */
+/** @var app\models\Talents $talents */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Categories'), 'url' => ['index']];
@@ -15,23 +16,42 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+    <div class="box">
+        <div class="box-body no-padding">
+            <table class="table table-striped">
+                <tbody>
+                <tr>
+                    <th>Id</th>
+                    <th>Таланты</th>
+                    <th></th>
+                </tr>
+                <?php foreach ($talents as $talent) : ?>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'name',
-        ],
-    ]) ?>
+                    <tr>
+                        <td><?= $talent->id?></td>
+                        <td><?= $talent->name?></td>
+                        <td>
+                            <?php
+                            $status = $model->getTalentStatus($talent->id);
+                            echo Html::a($status['title'], [$status['url'], 'id' => $model->id], [
+                                'class' => 'btn btn-'.$status['color'],
+                                'data' => [
+                                    //                                        'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
+                                    'method' => 'post',
+                                    'params' => [
+                                        'CategoryTalents[category_id]' => $model->id,
+                                        'CategoryTalents[talents_id]' => $talent->id
+                                    ]
+                                ],
+                            ])
+                            ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
 
 </div>
